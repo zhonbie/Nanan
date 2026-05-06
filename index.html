@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Aura 安全验证中心 | 极核服务器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 顶部背景大标题：所遇.難安 */
+        .bg-title {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0;
+            pointer-events: none;
+            text-align: center;
+            width: 100%;
+        }
+        .bg-title h1 {
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #00ff99, #33ccff, #9966ff, #ff66cc, #ffcc00);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: bgTitleFlow 5s linear infinite;
+            opacity: 0.25;
+        }
+        @keyframes bgTitleFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+            font-family: 'Segoe UI', 'Poppins', 'SF Pro Text', system-ui, -apple-system, 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .glass-container {
+            max-width: 520px;
+            width: 100%;
+            background: rgba(12, 18, 28, 0.75);
+            backdrop-filter: blur(16px);
+            border-radius: 56px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .panel {
+            padding: 32px 28px 40px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+        }
+        .hidden-panel {
+            display: none;
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .brand h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #aaaaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .brand p {
+            color: #8e9bb5;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .input-group {
+            margin: 20px 0 16px;
+            padding: 20px;
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .input-group::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(180, 200, 255, 0.04), transparent);
+            animation: liquidFlow 6s linear infinite;
+            z-index: 0;
+        }
+        @keyframes liquidFlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .input-field {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            border-radius: 60px;
+            padding: 16px 24px;
+            font-size: 18px;
+            color: white;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .input-field:focus {
+            border-color: rgba(255, 180, 70, 0.6);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 0 20px rgba(255, 180, 70, 0.25);
+        }
+        .btn, .modal-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 60px;
+            padding: 14px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .btn:hover, .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .btn:active, .modal-btn:active {
+            transform: scale(0.97);
+        }
+        .modal-btn {
+            width: auto;
+            padding: 8px 28px;
+            font-size: 16px;
+        }
+        .error-msg {
+            color: #ff8a7a;
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: center;
+            background: rgba(255, 60, 30, 0.15);
+            padding: 6px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 2;
+        }
+        .loader-area {
+            text-align: center;
+            margin: 30px 0;
+            padding: 24px;
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .status-text {
+            color: #cad2ff;
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .rainbow-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 12px 0 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .rainbow-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff4d4d, #ffb347, #3eff9e, #4ad4ff, #b76eff);
+            background-size: 200% 100%;
+            border-radius: 20px;
+            transition: width 0.08s linear;
+            box-shadow: 0 0 6px #ffb347;
+        }
+        .loading-sub {
+            color: #9aa4c2;
+            font-size: 14px;
+        }
+        .face-scan-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0 30px;
+            padding: 28px 20px;
+            border-radius: 36px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+        .scan-icon {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .face-logo {
+            font-size: 68px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+        .scan-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            background: #3eff9e;
+            box-shadow: 0 0 12px #00ffaa;
+            border-radius: 4px;
+            animation: scanMove 1.2s infinite ease-in-out;
+        }
+        @keyframes scanMove {
+            0% { width: 0%; left: 50%; opacity: 0.6; transform: translateX(-50%);}
+            30% { width: 70%; left: 50%; opacity: 1;}
+            100% { width: 100%; left: 50%; opacity: 0.8; transform: translateX(-50%);}
+        }
+        .scan-text {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e0eaff, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        .scan-badge {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ffcd94;
+        }
+        .download-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .download-modal.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .download-card {
+            width: 300px;
+            background: rgba(20, 25, 35, 0.85);
+            backdrop-filter: blur(25px);
+            border-radius: 36px;
+            padding: 36px 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .download-card h3 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        .download-link-btn {
+            display: inline-block;
+            width: 100%;
+            background: linear-gradient(95deg, #3eff9e, #4ad4ff);
+            border: none;
+            border-radius: 60px;
+            padding: 14px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+        .close-download-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .final-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            min-height: 200px;
+            padding: 20px 20px;
+        }
+        .final-btn {
+            width: 80%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 16px 0;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .start-btn {
+            background: linear-gradient(95deg, #4ad4ff, #b76eff);
+            color: #fff;
+        }
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .custom-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-card {
+            background: rgba(20, 25, 35, 0.85);
+            backdrop-filter: blur(25px);
+            border-radius: 44px;
+            padding: 28px 24px;
+            width: 280px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.5);
+        }
+        .modal-card p {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        /* 🔥 炫彩科技流光圆圈（替换原黄色） */
+        .silence-circle {
+            position: fixed;
+            top: 32px;
+            left: 28px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #121a2f, #0a0f1e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 120;
+            box-shadow: 
+                0 0 0 3px #4ad4ff,
+                0 0 0 7px #b76eff,
+                0 0 20px rgba(74, 212, 255, 0.6);
+            transition: 0.2s;
+            opacity: 0;
+            transform: scale(0.7);
+            pointer-events: none;
+            backdrop-filter: blur(6px);
+        }
+        .silence-circle.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            animation: techPulse 1.4s infinite;
+        }
+        @keyframes techPulse {
+            0% { 
+                box-shadow: 0 0 0 3px #4ad4ff, 0 0 0 7px #b76eff, 0 0 20px rgba(74,212,255,0.6);
+            }
+            50% { 
+                box-shadow: 0 0 0 5px #3eff9e, 0 0 0 10px #ff66cc, 0 0 30px rgba(62,255,158,0.8);
+            }
+            100% { 
+                box-shadow: 0 0 0 3px #4ad4ff, 0 0 0 7px #b76eff, 0 0 20px rgba(74,212,255,0.6);
+            }
+        }
+        .silence-circle span {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4ad4ff, #b76eff, #3eff9e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px rgba(74,212,255,0.4);
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+
+        .reset-hint {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
+            border-radius: 60px;
+            font-size: 12px;
+            color: #ccc;
+            cursor: pointer;
+            z-index: 200;
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+        }
+        footer {
+            text-align: center;
+            font-size: 11px;
+            color: #5d6a82;
+            margin-top: 18px;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部背景大标题 -->
+<div class="bg-title">
+    <h1>所遇.難安</h1>
+</div>
+
+<canvas id="particles"></canvas>
+
+<div id="downloadModal" class="download-modal">
+    <div class="download-card">
+        <h3>验证完成</h3>
+        <a href="https://www.ilanzou.com/s/SUQmvRGK" target="_blank" class="download-link-btn">立即下载</a>
+        <button id="closeDownload" class="close-download-btn">关闭</button>
+    </div>
+</div>
+<div class="glass-container">
+    <div id="panelInput" class="panel">
+        <div class="brand">
+            <h1>⚡ Aura 极核服务器</h1>
+            <p>安全接入 · 动态卡网验证</p>
+        </div>
+        <div class="input-group">
+            <input type="text" id="cardInput" class="input-field" placeholder="输入卡密 / 特权代码" autocomplete="off">
+            <button id="submitCardBtn" class="btn">验证卡网 ▸</button>
+        </div>
+        <div id="inputErrorMsg" class="error-msg" style="display: none;">❌ 卡密错误，请重试</div>
+        <footer>Aura 专属通道 · 动态加密</footer>
+    </div>
+    <div id="panelLoading" class="panel hidden-panel">
+        <div class="brand">
+            <h1>⏳ 安全检测中</h1>
+            <p>Aura 光环</p>
+        </div>
+        <div class="loader-area">
+            <div class="status-text">🔐 正在检测卡密是否正确</div>
+            <div class="rainbow-bar">
+                <div id="rainbowFill" class="rainbow-fill"></div>
+            </div>
+            <div class="loading-sub">加密协议握手 • 量子校验中</div>
+        </div>
+        <footer>请勿关闭页面 • 服务器安全认证</footer>
+    </div>
+    <div id="panelFaceScan" class="panel hidden-panel">
+        <div class="brand">
+            <h1>📱 Face ID 镜像</h1>
+            <p>仿生扫描 · 活体检测</p>
+        </div>
+        <div class="face-scan-area">
+            <div class="scan-icon" id="scanIconBox">
+                <div class="face-logo">👤</div>
+                <div id="scanLineAnim" class="scan-line" style="display: block;"></div>
+            </div>
+            <div class="scan-text" id="scanStatusText">正在扫描安全</div>
+            <div class="scan-badge">Aura 面容模组</div>
+        </div>
+        <footer>保持面部在框内 · 环境光匹配</footer>
+    </div>
+
+    <div id="panelFinal" class="panel hidden-panel">
+        <div class="brand">
+            <h1>⚡ Aura 极核</h1>
+            <p>验证已全部完成</p>
+        </div>
+        <div class="final-box">
+            <a href="https://www.ilanzou.com/s/SUQmvRGK" target="_blank" class="final-btn">下载文件</a>
+            <button class="final-btn start-btn">开始使用</button>
+        </div>
+        <footer>Aura · 安全验证完成</footer>
+    </div>
+</div>
+<div id="silenceGoldCircle" class="silence-circle">
+    <span>难安</span>
+</div>
+<div id="resetBtn" class="reset-hint">⟳ 重置流程</div>
+<div id="globalModal" class="custom-modal">
+    <div class="modal-card">
+        <p id="modalMessage">消息</p>
+        <button id="modalConfirmBtn" class="modal-btn">确认</button>
+    </div>
+</div>
+
+<script>
+// 绿色日文+英文 文字粒子
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+const texts = [
+    'Aura','Security','Login','Guard','Core','Sync','Zero','One',
+    '平安','輝光','守護','真理','静寂','夜明','極心','青嵐'
+];
+const particles = [];
+const count = 50;
+
+class TextParticle {
+    constructor() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.text = texts[Math.floor(Math.random() * texts.length)];
+        this.size = Math.random() * 12 + 10;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.speedY = Math.random() * 0.4 - 0.2;
+        this.alpha = Math.random() * 0.6 + 0.2;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > w) this.speedX *= -1;
+        if (this.y < 0 || this.y > h) this.speedY *= -1;
+    }
+    draw() {
+        ctx.save();
+        ctx.font = `${this.size}px monospace`;
+        ctx.fillStyle = `rgba(0, 255, 128, ${this.alpha})`;
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, this.x, this.y + this.size/3);
+        ctx.restore();
+    }
+}
+
+function init() {
+    particles.length = 0;
+    for (let i=0; i<count; i++) particles.push(new TextParticle());
+}
+function animate() {
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+}
+window.addEventListener('resize', () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+});
+init();
+animate();
+
+// 原有逻辑
+const panelInput = document.getElementById('panelInput');
+const panelLoading = document.getElementById('panelLoading');
+const panelFaceScan = document.getElementById('panelFaceScan');
+const panelFinal = document.getElementById('panelFinal');
+const submitBtn = document.getElementById('submitCardBtn');
+const cardInput = document.getElementById('cardInput');
+const inputError = document.getElementById('inputErrorMsg');
+const rainbowFill = document.getElementById('rainbowFill');
+const silenceCircle = document.getElementById('silenceGoldCircle');
+const resetEl = document.getElementById('resetBtn');
+const globalModal = document.getElementById('globalModal');
+const modalMessageSpan = document.getElementById('modalMessage');
+const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+const downloadModal = document.getElementById('downloadModal');
+const closeDownload = document.getElementById('closeDownload');
+const CUSTOM_WEBSITE = "https://www.ilanzou.com/s/SUQmvRGK";
+let loadingInterval = null;
+let scanTimer = null;
+let isScanCompleted = false;
+let isSilenceAlreadyCreated = false;
+let currentStep = 'input';
+
+function openDownloadModal() { downloadModal.classList.add('show'); }
+closeDownload.onclick = () => { downloadModal.classList.remove('show'); showFinalPanel(); };
+function showSmallModal(message, onConfirm) {
+    modalMessageSpan.innerText = message;
+    globalModal.classList.add('active');
+    const confirmHandler = () => {
+        globalModal.classList.remove('active');
+        modalConfirmBtn.removeEventListener('click', confirmHandler);
+        if (onConfirm) onConfirm();
+    };
+    modalConfirmBtn.addEventListener('click', confirmHandler, { once: true });
+}
+function clearAllTimeoutsAndIntervals() {
+    if (loadingInterval) clearInterval(loadingInterval);
+    if (scanTimer) clearTimeout(scanTimer);
+}
+function showPanel(panelName) {
+    panelInput.classList.add('hidden-panel');
+    panelLoading.classList.add('hidden-panel');
+    panelFaceScan.classList.add('hidden-panel');
+    panelFinal.classList.add('hidden-panel');
+    if (panelName === 'input') panelInput.classList.remove('hidden-panel');
+    else if (panelName === 'loading') panelLoading.classList.remove('hidden-panel');
+    else if (panelName === 'facescan') panelFaceScan.classList.remove('hidden-panel');
+    else if (panelName === 'final') panelFinal.classList.remove('hidden-panel');
+    currentStep = panelName;
+}
+function showFinalPanel() { showPanel('final'); }
+function handleCardSubmit() {
+    if (currentStep !== 'input') return;
+    const inputCode = cardInput.value.trim();
+    if (inputCode === "Aura" || inputCode === "aura") {
+        inputError.style.display = 'none';
+        showPanel('loading');
+        startLoadingAnimationAndCheck();
+    } else {
+        inputError.style.display = 'block';
+        inputError.innerText = '❌ 卡密错误，正确卡密：Aura / aura';
+    }
+}
+function startLoadingAnimationAndCheck() {
+    let width = 0;
+    rainbowFill.style.width = '0%';
+    const totalDuration = 1800;
+    const stepTime = 20;
+    const incrementPerStep = 100 / (totalDuration / stepTime);
+    loadingInterval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(loadingInterval);
+            showSmallModal("🎉 恭喜卡密正确", () => {
+                showPanel('facescan');
+                startFaceScanProcess();
+            });
+            return;
+        }
+        width += incrementPerStep;
+        rainbowFill.style.width = width + '%';
+    }, stepTime);
+}
+function startFaceScanProcess() {
+    isScanCompleted = false;
+    isSilenceAlreadyCreated = false;
+    silenceCircle.classList.remove('show');
+    const scanLine = document.getElementById('scanLineAnim');
+    const scanStatusSpan = document.getElementById('scanStatusText');
+    scanLine.style.display = 'block';
+    scanStatusSpan.innerText = '正在扫描安全';
+    scanTimer = setTimeout(() => {
+        scanLine.style.display = 'none';
+        scanStatusSpan.innerText = '✅ 扫描安全通过';
+        isScanCompleted = true;
+        showSmallModal("🔒 扫描安全完成 · 生物特征匹配", () => {
+            if (!isSilenceAlreadyCreated) {
+                isSilenceAlreadyCreated = true;
+                silenceCircle.classList.add('show');
+            }
+            openDownloadModal();
+        });
+    }, 2000);
+}
+silenceCircle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isScanCompleted && silenceCircle.classList.contains('show')) {
+        showSmallModal("所遇难安，所安难遇\n「深空之寂」", () => {});
+    }
+});
+function resetAllProcess() {
+    clearAllTimeoutsAndIntervals();
+    isScanCompleted = false;
+    isSilenceAlreadyCreated = false;
+    silenceCircle.classList.remove('show');
+    downloadModal.classList.remove('show');
+    showPanel('input');
+    cardInput.value = '';
+    inputError.style.display = 'none';
+    rainbowFill.style.width = '0%';
+    const scanLine = document.getElementById('scanLineAnim');
+    scanLine.style.display = 'block';
+    const scanStatusSpan = document.getElementById('scanStatusText');
+    scanStatusSpan.innerText = '正在扫描安全';
+    globalModal.classList.remove('active');
+}
+function initEventListeners() {
+    submitBtn.addEventListener('click', handleCardSubmit);
+    resetEl.addEventListener('click', resetAllProcess);
+    cardInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleCardSubmit();
+    });
+}
+window.addEventListener('load', () => {
+    initEventListeners();
+    silenceCircle.classList.remove('show');
+    downloadModal.classList.remove('show');
+    globalModal.classList.remove('active');
+});
+</script>
+</body>
+</html>
